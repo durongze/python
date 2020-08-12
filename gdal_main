@@ -1,0 +1,30 @@
+import gdal
+
+geomList = list()
+
+def SaveFeatureToShp(feature):
+    print("SaveFeatureToShp")
+
+def ClassGeometry(geoms):
+    type = geoms.GetGeometryType()
+    if 2==type:
+        geomList.append(geoms)
+    elif 5== type:
+        for idx in range(geoms.GetGeometryCount()):
+            ClassGeometry(geoms.GetGeometryRef(idx))
+
+def DumpGeometry(geomList):
+    while len(geomList) > 0:
+        geom=geomList.pop()
+
+if __name__ == "__main__":
+    DataSource = gdal.OpenEx("d:\\dyz.shp")
+    Layer = DataSource.GetLayer(0)
+    Feature=Layer.GetNextFeature()
+    while Feature:
+        SaveFeatureToShp(Feature)
+        Geometry = Feature.GetGeometryRef()
+        if Geometry:
+            ClassGeometry(Geometry)
+        Feature = Layer.GetNextFeature()
+    DumpGeometry(geomList)
